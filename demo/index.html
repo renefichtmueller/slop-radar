@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Slop Radar - AI Text Detector</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#c9d1d9;font-family:system-ui,-apple-system,sans-serif;line-height:1.6}
+.header{text-align:center;padding:2rem 1rem;border-bottom:1px solid #21262d}
+.header h1{font-size:1.8rem;color:#f0883e}
+.header p{color:#8b949e;margin-top:.3rem}
+.container{max-width:900px;margin:0 auto;padding:1.5rem 1rem}
+textarea{width:100%;height:200px;padding:1rem;font-size:.95rem;background:#161b22;border:1px solid #30363d;border-radius:8px;color:#c9d1d9;resize:vertical;font-family:inherit;line-height:1.7}
+textarea:focus{outline:none;border-color:#f0883e}
+.actions{display:flex;gap:.5rem;margin:1rem 0;flex-wrap:wrap;align-items:center}
+.btn{padding:.6rem 1.2rem;background:#f0883e;border:none;border-radius:6px;color:#0d1117;font-size:.95rem;font-weight:700;cursor:pointer}
+.btn:hover{background:#d2762e}
+.ex-btn{padding:.4rem .8rem;font-size:.8rem;background:#161b22;border:1px solid #30363d;border-radius:4px;color:#8b949e;cursor:pointer}
+.ex-btn:hover{border-color:#f0883e;color:#f0883e}
+.lang-toggle{margin-left:auto;display:flex;gap:.3rem}
+.lang-btn{padding:.4rem .6rem;font-size:.8rem;background:#161b22;border:1px solid #30363d;border-radius:4px;color:#8b949e;cursor:pointer}
+.lang-btn.active{background:#f0883e33;border-color:#f0883e;color:#f0883e}
+.results{margin-top:1.5rem}
+.score-card{display:flex;align-items:center;gap:1.5rem;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.score-num{font-size:3rem;font-weight:800;min-width:100px;text-align:center}
+.score-info{flex:1}
+.badge{display:inline-block;padding:.3rem .8rem;border-radius:20px;font-weight:700;font-size:.85rem}
+.score-desc{color:#8b949e;margin-top:.3rem;font-size:.9rem}
+.found-section{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:1rem;margin-bottom:1rem}
+.found-section h3{color:#f0883e;font-size:.95rem;margin-bottom:.8rem}
+.highlight-text{font-size:.9rem;line-height:2;white-space:pre-wrap;word-wrap:break-word}
+.highlight-text mark{background:#da363355;color:#f85149;border-radius:2px;padding:0 2px;text-decoration:underline wavy #f85149}
+.phrase-list{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.8rem}
+.phrase-tag{font-size:.75rem;padding:.2rem .5rem;background:#da363322;border:1px solid #da363355;border-radius:4px;color:#f85149}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1rem}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.8rem;text-align:center}
+.stat-num{font-size:1.5rem;font-weight:700}
+.stat-label{font-size:.75rem;color:#8b949e}
+.empty{text-align:center;padding:3rem;color:#484f58}
+.footer{text-align:center;padding:2rem;border-top:1px solid #21262d;margin-top:2rem;color:#8b949e;font-size:.85rem}
+.footer a{color:#58a6ff;text-decoration:none}
+@media(max-width:600px){.score-card{flex-direction:column;text-align:center}.stats{grid-template-columns:1fr}.header h1{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>Slop Radar</h1>
+<p>Detect AI-generated text by analyzing phrase patterns &mdash; 245 EN + 127 DE phrases</p>
+</div>
+<div class="container">
+<textarea id="input" placeholder="Paste your text here to analyze for AI slop patterns..."></textarea>
+<div class="actions">
+<button class="btn" onclick="analyze()">Analyze</button>
+<button class="ex-btn" onclick="tryAI()">Try AI-generated text</button>
+<button class="ex-btn" onclick="tryHuman()">Try human text</button>
+<div class="lang-toggle">
+<button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+<button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+</div>
+</div>
+<div class="results" id="results">
+<div class="empty">Paste text and click Analyze to detect AI slop patterns.</div>
+</div>
+</div>
+<div class="footer">
+Powered by <a href="https://github.com/renefichtmueller/slop-radar">slop-radar</a> &middot; Open Source &middot; MIT License &middot; <a href="https://github.com/renefichtmueller/slop-radar">GitHub</a>
+</div>
+<script>
+const PHRASES_EN=["dive into", "dive deep", "deep dive", "delve", "delve into", "crucial", "landscape", "robust", "leverage", "game-changer", "game-changing", "cutting-edge", "state-of-the-art", "revolutionize", "revolutionary", "transformative", "unprecedented", "unparalleled", "seamless", "seamlessly", "comprehensive", "holistic", "noteworthy", "remarkable", "exceptional", "innovative", "versatile", "foster", "streamline", "optimize", "enhance", "harness", "unlock", "curate", "curated", "tailored", "bespoke", "empower", "empowering", "synergy", "paradigm shift", "paradigm", "ecosystem", "unpack", "utilize", "journey", "tapestry", "mosaic", "masterfully", "moreover", "furthermore", "in addition", "additionally", "it is worth noting", "it's worth noting", "interestingly", "indeed", "essentially", "fundamentally", "in other words", "that said", "it is important to note", "it's important to note", "needless to say", "in today's world", "in today's fast-paced", "as we navigate", "in conclusion", "to summarize", "ultimately", "last but not least", "world-class", "firstly", "secondly", "thirdly", "in this regard", "to that end", "with that being said", "it could be argued", "one might say", "arguably", "realm", "endeavor", "multifaceted", "spearhead", "bolster", "let's unpack", "at the end of the day", "moving forward", "circle back", "double down", "pivot", "disrupt", "disruption", "disruptive", "next-level", "best-in-class", "value-add", "low-hanging fruit", "move the needle", "north star", "bleeding edge", "future-proof", "scalable", "actionable", "impactful", "thought leadership", "stakeholder", "bandwidth", "drill down", "level up", "take it to the next level", "on the same page", "reach out", "touch base", "loop in", "take offline", "at the forefront", "pave the way", "shed light on", "stand out from the crowd", "rest assured", "without further ado", "it goes without saying", "when it comes to", "in light of", "by the same token", "all things considered", "the bottom line", "at its core", "resonate", "elevate", "amplify", "catalyze", "orchestrate", "reimagine", "democratize", "operationalize", "incentivize", "contextualize", "strategize", "maximize", "minimize", "prioritize", "let me break this down", "let me explain", "let me walk you through", "here's the thing", "here's what you need to know", "here's the deal", "that being said", "having said that", "with that in mind", "it bears mentioning", "it should be noted", "on a broader scale", "in the grand scheme", "the crux of the matter", "by and large", "for all intents and purposes", "in a nutshell", "to put it simply", "in essence", "at the heart of", "in the realm of", "navigate the complexities", "navigate the landscape", "ever-evolving", "ever-changing", "fast-paced", "rapidly evolving", "dynamic landscape", "shifting landscape", "nuanced", "nuanced approach", "myriad", "myriad of", "plethora", "a plethora of", "a myriad of", "overarching", "underscore", "underscores", "pivotal", "paramount", "indispensable", "imperative", "groundbreaking", "trailblazing", "pioneering", "thought-provoking", "insightful", "profound", "meticulous", "meticulously", "intricate", "intricacies", "akin to", "serves as a testament", "stands as a testament", "a testament to", "not only...but also", "while it's true that", "on the flip side", "by the same token", "it's no secret that", "the elephant in the room", "food for thought", "the takeaway", "key takeaway", "key takeaways", "wrapping up", "to wrap up", "in summary", "to sum up", "all in all", "above and beyond", "best practices", "pain point", "pain points", "value proposition", "end-to-end", "full-stack", "soup to nuts", "from the ground up", "out of the box", "turnkey", "plug and play", "one-stop shop", "win-win", "synergize", "ideate", "iterate", "iterate on", "deep-seated", "robust framework", "robust solution", "holistic approach", "comprehensive guide", "definitive guide", "ultimate guide", "step-by-step guide", "hands-on", "real-world", "mission-critical"];
+const PHRASES_DE=["revolutionaer", "bahnbrechend", "wegweisend", "transformativ", "beispiellos", "unvergleichlich", "erstklassig", "hochmodern", "nahtlos", "robust", "ganzheitlich", "umfassend", "tiefgreifend", "bemerkenswert", "aussergewoehnlich", "vielfaeltig", "innovativ", "massgeschneidert", "darueber hinaus", "des weiteren", "zusaetzlich", "in diesem zusammenhang", "es ist erwaehnenswert", "interessanterweise", "tatsaechlich", "im wesentlichen", "grundsaetzlich", "nichtsdestotrotz", "hinsichtlich", "diesbezueglich", "in anbetracht", "unter beruecksichtigung", "zusammenfassend", "abschliessend", "im grossen und ganzen", "letzten endes", "nicht zuletzt", "in der heutigen zeit", "in einer sich staendig veraendernden welt", "es sei darauf hingewiesen", "hervorzuheben ist", "anzumerken ist", "es laesst sich festhalten", "festzuhalten ist", "zweifellos", "zweifelsfrei", "unbestreitbar", "richtungsweisend", "zukunftsweisend", "zukunftsorientiert", "vielschichtig", "facettenreich", "paradigmenwechsel", "synergie", "synergieeffekte", "mehrwert", "wertschoepfung", "potenzial entfalten", "potenziale heben", "stellenwert", "tragweite", "implikationen", "dimension", "dynamik", "komplexitaet", "herausforderungen meistern", "chancen nutzen", "weichen stellen", "impulse setzen", "akzente setzen", "massstaebe setzen", "im fokus stehen", "im mittelpunkt stehen", "eine schluesselfunktion einnehmen", "eine zentrale rolle spielen", "von entscheidender bedeutung", "von grosser tragweite", "nachhaltig", "nachhaltigkeit", "resilient", "resilienz", "agil", "agilitaet", "skalierbar", "skalierbarkeit", "optimieren", "optimierung", "implementieren", "implementierung", "evaluieren", "evaluierung", "analysieren", "eruieren", "verifizieren", "validieren", "konkretisieren", "operationalisieren", "priorisieren", "fokussieren", "adressieren", "thematisieren", "initiieren", "forcieren", "intensivieren", "vorantreiben", "beschleunigen", "katalysieren", "proaktiv", "praezedenzlos", "state of the art", "best practice", "benchmark", "roadmap", "stakeholder", "framework", "mindset", "enabler", "gamechanger", "deep dive", "hands-on", "bottom-up", "top-down", "end-to-end", "win-win-situation", "pain point", "use case", "value proposition"];
+let lang='en';
+
+function setLang(l){lang=l;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l))}
+
+function tryAI(){
+  document.getElementById('input').value=`In today's fast-paced world, it's crucial to leverage cutting-edge solutions that seamlessly integrate with existing workflows. This comprehensive guide delves into the transformative power of innovative approaches that are truly game-changing.
+
+Moreover, it's worth noting that these robust frameworks empower stakeholders to unlock unprecedented value. The holistic approach fosters synergy across the ecosystem, paving the way for groundbreaking results.
+
+In conclusion, by harnessing these best-in-class methodologies, organizations can navigate the complexities of the ever-evolving landscape and move the needle on mission-critical objectives.`;
+  analyze();
+}
+function tryHuman(){
+  document.getElementById('input').value=`We switched our database from MySQL to PostgreSQL last week. The migration took about 3 days, mostly because of the JSON column differences. Had to rewrite 12 queries that used MySQL-specific syntax.
+
+The biggest pain point was the GROUP_CONCAT function - PostgreSQL uses string_agg instead. Also, our TIMESTAMP columns needed explicit timezone handling.
+
+Performance improved by roughly 20% on our heaviest queries after adding proper indexes. The EXPLAIN output in PostgreSQL is way more detailed than MySQL, which helped a lot with optimization.`;
+  analyze();
+}
+
+function analyze(){
+  const text=document.getElementById('input').value;
+  if(!text.trim()){document.getElementById('results').innerHTML='<div class="empty">Enter some text first.</div>';return}
+  const phrases=lang==='en'?PHRASES_EN:PHRASES_DE;
+  const lower=text.toLowerCase();
+  const found=[];
+  for(const p of phrases){if(lower.includes(p.toLowerCase()))found.push(p)}
+  const wordCount=text.split(/\s+/).filter(Boolean).length;
+  const density=wordCount>0?(found.length/wordCount)*100:0;
+  let score,rating,color,bg;
+  if(found.length===0){score=0;rating='HUMAN';color='#3fb950';bg='#3fb95022'}
+  else if(found.length<=2&&density<1){score=15;rating='CLEAN';color='#3fb950';bg='#3fb95022'}
+  else if(found.length<=5&&density<2){score=40;rating='SUSPICIOUS';color='#d29922';bg='#d2992222'}
+  else if(found.length<=10||density<4){score=70;rating='LIKELY AI';color='#f0883e';bg='#f0883e22'}
+  else{score=95;rating='PURE SLOP';color='#f85149';bg='#f8514922'}
+  let highlighted=text;
+  const sortedPhrases=[...found].sort((a,b)=>b.length-a.length);
+  for(const p of sortedPhrases){
+    const re=new RegExp(p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+    highlighted=highlighted.replace(re,m=>`<mark>${m}</mark>`);
+  }
+  const patterns=[];
+  if((text.match(/!\s/g)||[]).length>3)patterns.push('Excessive exclamation marks');
+  if((text.match(/\b(In conclusion|To summarize|Moreover|Furthermore)\b/gi)||[]).length>1)patterns.push('Repetitive transition words');
+  if(text.split('.').filter(s=>s.trim().length>150).length>2)patterns.push('Unusually long sentences');
+  if((text.match(/\b(the|this|these|that)\s+(\w+\s+){0,2}(is|are|was|were)\s/gi)||[]).length>5)patterns.push('Passive-heavy structure');
+  document.getElementById('results').innerHTML=`
+    <div class="score-card">
+      <div class="score-num" style="color:${color}">${score}</div>
+      <div class="score-info">
+        <span class="badge" style="background:${bg};color:${color}">${rating}</span>
+        <div class="score-desc">${found.length} slop phrase${found.length!==1?'s':''} found in ${wordCount} words (${density.toFixed(1)}% density)</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-num" style="color:${color}">${found.length}</div><div class="stat-label">Phrases Found</div></div>
+      <div class="stat"><div class="stat-num">${wordCount}</div><div class="stat-label">Words</div></div>
+      <div class="stat"><div class="stat-num" style="color:${color}">${density.toFixed(1)}%</div><div class="stat-label">Slop Density</div></div>
+    </div>
+    ${found.length?`<div class="found-section"><h3>Highlighted Text</h3><div class="highlight-text">${highlighted}</div>
+      <div class="phrase-list">${found.map(p=>`<span class="phrase-tag">${p}</span>`).join('')}</div></div>`:''}
+    ${patterns.length?`<div class="found-section"><h3>Structural Patterns</h3><div class="phrase-list">${patterns.map(p=>`<span class="phrase-tag">${p}</span>`).join('')}</div></div>`:''}`;
+}
+</script>
+</body>
+</html>
