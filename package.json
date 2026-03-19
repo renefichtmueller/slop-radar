@@ -1,0 +1,42 @@
+{
+  "name": "slop-radar",
+  "version": "1.0.0",
+  "description": "AI slop detection toolkit with living buzzword database, CLI tool, and Claude Code skill",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "slop-radar": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "check": "node dist/cli.js check",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ai",
+    "slop",
+    "detection",
+    "writing",
+    "quality",
+    "buzzword",
+    "llm",
+    "ai-detection",
+    "content-quality"
+  ],
+  "author": "Rene Fichtmueller",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src/database"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^22.0.0"
+  }
+}
