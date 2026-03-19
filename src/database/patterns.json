@@ -1,0 +1,99 @@
+[
+  {
+    "name": "em-dash-abuse",
+    "pattern": "\\u2014.*\\u2014.*\\u2014",
+    "weight": 5,
+    "description": "Excessive em-dash usage (3+ per paragraph) is a strong AI writing signal"
+  },
+  {
+    "name": "let-me-starter",
+    "pattern": "^\\s*let me \\w+",
+    "flags": "im",
+    "weight": 3,
+    "description": "\"Let me [verb]\" sentence starters are characteristic of AI assistants"
+  },
+  {
+    "name": "heres-the-thing",
+    "pattern": "here'?s (the thing|what|the deal|the kicker)",
+    "flags": "i",
+    "weight": 3,
+    "description": "\"Here's the thing/what\" openers mimic conversational AI tone"
+  },
+  {
+    "name": "binary-contrast",
+    "pattern": "not (just|only|merely|simply) .{5,40}, but (also )?",
+    "flags": "i",
+    "weight": 3,
+    "description": "Binary contrast structures (\"Not just X, but Y\") are over-used by AI"
+  },
+  {
+    "name": "wh-starters",
+    "pattern": "^\\s*(what makes this|why this matters|why it matters|how this works|what this means|where this gets interesting)",
+    "flags": "im",
+    "weight": 4,
+    "description": "Wh- question starters used as section headers are an AI pattern"
+  },
+  {
+    "name": "bullet-overload",
+    "pattern": "(^\\s*[-*]\\s.+\\n){6,}",
+    "flags": "m",
+    "weight": 4,
+    "description": "Long bullet-point lists (6+) without prose are a structural AI pattern"
+  },
+  {
+    "name": "triple-adjective",
+    "pattern": "\\b\\w+(?:ly)?\\b,\\s+\\b\\w+(?:ly)?\\b,\\s+(?:and\\s+)?\\b\\w+(?:ly)?\\b\\s+\\w+",
+    "flags": "i",
+    "weight": 2,
+    "description": "Triple adjective chains before nouns are more common in AI writing"
+  },
+  {
+    "name": "meta-reference",
+    "pattern": "in this (article|post|guide|blog|piece|section|tutorial|overview|essay)",
+    "flags": "i",
+    "weight": 3,
+    "description": "Self-referencing meta text is common in AI-generated content"
+  },
+  {
+    "name": "passive-voice-density",
+    "pattern": "\\b(is|are|was|were|been|being)\\s+\\w+ed\\b",
+    "flags": "gi",
+    "weight": 1,
+    "description": "Individual passive voice instance (aggregated for density check)"
+  },
+  {
+    "name": "worth-noting",
+    "pattern": "^\\s*it('s|\\s+is)\\s+worth\\s+(noting|mentioning|highlighting|pointing out)",
+    "flags": "im",
+    "weight": 4,
+    "description": "\"It's worth noting\" as a sentence opener is a strong AI signal"
+  },
+  {
+    "name": "colon-list-intro",
+    "pattern": ":\\s*\\n\\s*[-*1]",
+    "flags": "m",
+    "weight": 2,
+    "description": "Colon followed by a list is a common AI formatting pattern"
+  },
+  {
+    "name": "emoji-header",
+    "pattern": "^\\s*[\\u{1F300}-\\u{1FAD6}]\\s+\\*\\*",
+    "flags": "mu",
+    "weight": 5,
+    "description": "Emoji + bold header combinations are a strong AI formatting signal"
+  },
+  {
+    "name": "number-list-pattern",
+    "pattern": "^\\s*\\d+\\.\\s+\\*\\*.+\\*\\*",
+    "flags": "m",
+    "weight": 2,
+    "description": "Numbered lists with bold items are commonly AI-generated"
+  },
+  {
+    "name": "tldr-pattern",
+    "pattern": "(tl;?dr|key takeaway|bottom line|in a nutshell)\\s*:?\\s*\\n",
+    "flags": "im",
+    "weight": 3,
+    "description": "TL;DR / key takeaway sections are AI structural patterns"
+  }
+]
