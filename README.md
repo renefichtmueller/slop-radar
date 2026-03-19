@@ -153,6 +153,11 @@ Use it to:
 - Score AI drafts and iterate until they sound human
 - Enforce quality standards in a CI pipeline
 
+## Related Projects
+
+- **[claude-cortex](https://github.com/renefichtmueller/claude-cortex)** — Persistent memory for Claude Code sessions.
+- **[claude-sync](https://github.com/renefichtmueller/claude-sync)** — Multi-device sync for Claude Code.
+
 ## License
 
 MIT
