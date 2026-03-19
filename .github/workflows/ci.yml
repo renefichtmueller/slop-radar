@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: npm ci
+      - run: npm install
       - run: npx tsc --noEmit
       - run: npm run build
 
@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: 20
 
-      - run: npm ci
+      - run: npm install
       - name: Test CLI
         run: |
           echo "Let me dive deep into this transformative journey" | npx . check || true
