@@ -1,5 +1,7 @@
 # slop-radar
 
+> **[🚀 Live Demo](https://slop-radar-demo.pages.dev)** — Try it in your browser, no installation needed.
+
 **Detect AI slop in text.** A living buzzword database, structural pattern matcher, and scoring engine -- available as CLI tool, Node.js library, and Claude Code skill.
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -9,6 +11,8 @@
 ---
 
 ## What it does
+
+> **[🚀 Live Demo](https://slop-radar-demo.pages.dev)** — Try it in your browser, no installation needed.
 
 Slop-radar scans text for:
 
