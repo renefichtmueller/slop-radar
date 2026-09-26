@@ -13,7 +13,9 @@
     "dev": "tsc --watch",
     "start": "node dist/cli.js",
     "check": "node dist/cli.js check",
-    "test": "npm run build && bash test/cli-args.test.sh",
+    "test": "npm run build && npm run test:unit && npm run test:regression",
+    "test:unit": "node --test test/unit/*.test.mjs",
+    "test:regression": "bash test/regression/cli-args.test.sh",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

@@ -2,7 +2,7 @@
 # Regression test: a bare file argument must be analysed as that file,
 # never silently replaced by stdin; unknown commands must fail loudly.
 set -u
-CLI="node $(dirname "$0")/../dist/cli.js"
+CLI="node $(dirname "$0")/../../dist/cli.js"
 tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 printf "In today's fast-paced landscape, we must delve into a robust, seamless, cutting-edge tapestry of synergy. Moreover, leveraging holistic paradigms will unlock transformative value.\n" > "$tmp/sloppy.txt"
 fail=0
