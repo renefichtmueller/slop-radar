@@ -22,7 +22,7 @@ test("phrases-de.json has no duplicate phrases", () => {
   assert.deepEqual(low.filter((p, i) => low.indexOf(p) !== i), []);
 });
 
-test("phrases-en.json has no duplicate phrases", { todo: '"by the same token" is listed twice' }, () => {
+test("phrases-en.json has no duplicate phrases", () => {
   const low = load("phrases-en.json").map((p) => p.toLowerCase());
   assert.deepEqual(low.filter((p, i) => low.indexOf(p) !== i), []);
 });
