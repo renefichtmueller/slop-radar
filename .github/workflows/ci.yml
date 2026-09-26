@@ -37,3 +37,5 @@ jobs:
       - name: Test CLI
         run: |
           echo "Let me dive deep into this transformative journey" | npx . check || true
+      - name: CLI argument regression test
+        run: npm test
