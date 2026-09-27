@@ -5,3 +5,5 @@ export { score } from "./scorer.js";
 export type { ScoreResult, Rating } from "./scorer.js";
 
 export { formatFull, formatScore, formatJson } from "./formatter.js";
+
+export { VERSION } from "./version.js";

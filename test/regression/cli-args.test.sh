@@ -20,4 +20,11 @@ $CLI no-such-file.md </dev/null >/dev/null 2>&1; rc=$?
 
 got=$(cat "$tmp/sloppy.txt" | $CLI score | strip | awk '{print $1}')
 [ "$got" = "$want" ] && echo "PASS pipe + score unchanged ($got)" || { echo "FAIL pipe + score: got '$got'"; fail=1; }
+
+pkg_version=$(node -p "require(require('node:path').resolve('$(dirname "$0")/../../package.json')).version")
+got=$($CLI --version)
+[ "$got" = "slop-radar $pkg_version" ] && echo "PASS --version matches package.json ($got)" || { echo "FAIL --version: got '$got' want 'slop-radar $pkg_version'"; fail=1; }
+
+got=$($CLI "$tmp/sloppy.txt" </dev/null | strip | grep -o "v${pkg_version}" | head -1)
+[ "$got" = "v${pkg_version}" ] && echo "PASS check banner uses package version ($got)" || { echo "FAIL check banner version: got '$got' want 'v${pkg_version}'"; fail=1; }
 exit $fail
