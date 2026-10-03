@@ -1,127 +1,39 @@
 ---
 name: slop-radar
-description: Detect AI slop patterns in generated text. Use before finalizing any prose, documentation, README, or written content to check for AI buzzwords, structural patterns, and generic filler. Returns a score and actionable replacements.
-allowed-tools: ["Bash", "Read", "Glob"]
-argument-hint: "[file-or-text]"
+description: Score prose for AI slop (buzzwords, filler phrases, chatbot tells, formulaic structure) in English and German with the slop-radar engine, then suggest concrete rewrites. Use when the user asks to check text for AI slop or buzzwords, to make writing sound less AI-generated, or before finalizing a README, documentation, post or email they asked you to polish.
 ---
 
-# Slop Radar
+# slop-radar
 
-Scan text for AI-generated writing patterns before finalizing output.
+Measure AI-style writing with the real slop-radar engine instead of judging by eye. The score runs from 0 to 100; higher means more human.
 
-## When to Use
-
-- After generating documentation, READMEs, blog posts, or any prose
-- When reviewing or editing written content
-- Before committing markdown files
-- When user asks to "check for slop", "check quality", or "make it sound human"
-- Automatically after creating any substantial text output (500+ words)
-
-## How It Works
-
-1. **Buzzword scan**: Check against 437 English and 210 German AI phrases
-2. **Structural patterns**: Detect em-dash abuse, "Let me" starters, bullet overload, passive voice density, triple-adjective stacking, hedge phrases
-3. **Score**: 0-100 scale (100 = fully human, 0 = pure AI slop)
-
-## Instructions
-
-When triggered, analyze the text (from `$ARGUMENTS` file path or the most recently generated prose):
-
-### Step 1: Identify the text to check
-
-If `$ARGUMENTS` is a file path, read that file. Otherwise, check the most recently generated text output in the conversation.
-
-### Step 2: Run the slop scan
-
-Check the text against these pattern categories:
-
-**Buzzwords (deduct 2 points each):**
-"dive deep", "transformative", "journey", "landscape", "leverage", "cutting-edge", "holistic", "empower", "stakeholders", "synergy", "unprecedented", "robust", "streamline", "innovative", "paradigm", "ecosystem", "scalable", "game-changer", "best-in-class", "actionable", "at the end of the day", "in today's fast-paced", "it's worth noting", "moreover", "furthermore", "crucial", "pivotal", "seamless", "comprehensive", "elevate", "foster", "harness", "spearhead", "drive", "unlock", "reimagine", "navigate the complexities", "delve into", "underscore"
-
-**Structural Patterns (deduct 3-5 points each):**
-- Sentences starting with "Let me..." or "Here's the thing..."
-- Em-dash abuse (more than 1 per 200 words)
-- Triple bullet point lists where a paragraph would work
-- Passive voice density above 30%
-- Paragraphs ending with punchy one-liners
-- "Not X -- it's Y" contrast structures
-- Rhetorical question followed by immediate answer
-
-**Bonuses (add points):**
-- +5 for natural sentence length variation
-- +5 for concrete numbers, names, or specific examples
-- +3 for conversational tone without being forced
-
-### Step 3: Calculate and report score
-
-```
-Score: [X]/100  [RATING]
-
-Rating scale:
-  90-100  HUMAN          Clean, natural writing
-  70-89   MOSTLY CLEAN   Minor AI signals
-  50-69   SUSPICIOUS     Multiple AI patterns
-  30-49   LIKELY AI      Strong AI writing signals
-  0-29    PURE SLOP      Heavy buzzword and pattern use
-```
-
-### Step 4: Show flagged items with replacements
-
-For each flagged buzzword or pattern, suggest a concrete replacement:
-
-| Found | Replacement |
-|-------|-------------|
-| "leverage" | "use" |
-| "cutting-edge" | (name the specific technology) |
-| "stakeholders" | (name the actual people: "customers", "engineers") |
-| "it's worth noting that" | (delete -- just state the thing) |
-| "dive deep into" | "look at" or "examine" |
-| "transformative" | (describe the actual change) |
-| "comprehensive" | (be specific about what it covers) |
-| "seamless" | (describe the actual experience) |
-| "robust" | (state what makes it reliable) |
-| "innovative" | (describe what is actually new) |
-
-### Step 5: Offer to rewrite
-
-If score is below 70, offer to rewrite the flagged sections with concrete, specific language. Apply these principles:
-- Replace vague adjectives with specific facts
-- Replace buzzwords with plain words
-- Break formulaic structures
-- Add concrete examples where generalities exist
-- Use active voice with named subjects
-
-## Example Output
-
-```
-Slop Radar Results
-------------------
-Score: 42/100  LIKELY AI
-
-Buzzwords (8 found):
-  "transformative", "leverage", "cutting-edge", "holistic",
-  "stakeholders", "ecosystem", "seamless", "robust"
-
-Patterns (3 found):
-  - Let-me starter (line 1)
-  - Em-dash overuse (4 in 200 words)
-  - Punchy one-liner ending (line 12)
-
-Suggested rewrites provided for 11 items.
-Rewrite flagged sections? [y/n]
-```
-
-## Integration
-
-For automated checking, slop-radar is available as a CLI tool:
+## 1. Run the engine
 
 ```bash
-npx slop-radar check <file>    # or: npm install -g slop-radar
-slop-radar check <file>    # Full analysis
-slop-radar score <file>    # Score only
-slop-radar json <file>     # Machine-readable output
+npx -y slop-radar json path/to/file.md            # a file
+printf '%s' "$TEXT" | npx -y slop-radar json      # inline text
 ```
 
-## License
+Use `slop-radar json …` instead of `npx -y slop-radar json …` when it is installed globally (`npm install -g slop-radar`). Add `--lang de` or `--lang en` when auto-detection picks the wrong language.
 
-MIT
+The JSON contains `score`, `rating`, `language`, `phrases` (`phrase`, `count`), `patterns` (`name`, `count`, `weight`, optional `maxCount`) and `breakdown` (every deduction and bonus).
+
+## 2. Report
+
+- The score and rating (90-100 HUMAN, 70-89 MOSTLY CLEAN, 50-69 SUSPICIOUS, 30-49 LIKELY AI, 0-29 PURE SLOP).
+- Each flagged phrase and pattern with a concrete replacement. Quote the passage; do not list categories in the abstract.
+- The largest items from `breakdown`, so the user sees what costs the most points.
+
+## 3. Rewrite (when asked, or offer it below 70)
+
+- Replace buzzwords with plain words: "leverage" → "use", "utilize" → "use", "robust" → say what makes it reliable, "seamless" → describe the actual experience.
+- Name specifics instead of hype: "cutting-edge" → the technology, "stakeholders" → the people, "transformative" → the change.
+- Delete filler: "moreover", "it's worth noting that", "in today's fast-paced world", "I hope this helps".
+- Break formulas: "It's not X, it's Y" → state Y; "not only X but also Y" → two plain sentences; emoji headers and bold numbered lists → prose where prose works.
+- German: "maßgeschneiderte Lösungen", "einen Mehrwert schaffen", "tauchen wir ein", "auf das nächste Level" → say concretely what the thing does.
+
+Run the engine again on the rewrite and report the score before and after. Keep the author's meaning and facts; never invent numbers or examples.
+
+## Without Node.js
+
+If `npx` is unavailable, check the text by hand for the categories above and say clearly that the result is an estimate, not a slop-radar score.

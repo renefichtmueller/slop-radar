@@ -168,9 +168,16 @@ npm run build:demo
 
 CI fails if `demo/lib/` is out of date, so the demo cannot drift from the CLI again.
 
-## Claude Code skill
+## Claude Code and Codex skill
 
-Copy `skill/SKILL.md` (or `superpowers-skill/SKILL.md`) into `.claude/skills/slop-radar/` to use slop-radar from Claude Code.
+`skill/SKILL.md` is an agent skill for Claude Code and OpenAI Codex. It runs the real engine (`npx slop-radar json`), reports the hits and rewrites flagged passages. Install it once per tool:
+
+```bash
+mkdir -p ~/.claude/skills/slop-radar && cp skill/SKILL.md ~/.claude/skills/slop-radar/   # Claude Code
+mkdir -p ~/.codex/skills/slop-radar && cp skill/SKILL.md ~/.codex/skills/slop-radar/     # Codex
+```
+
+For a single project, use `.claude/skills/slop-radar/` inside the repository instead. `superpowers-skill/SKILL.md` is the same file, kept for existing installs.
 
 ## Why this exists
 
@@ -188,11 +195,6 @@ Use it to:
 - [Terry Sweetser (@tcsweetser)](https://github.com/tcsweetser): first test suite and CI test runs, the bare-file CLI fix, the three counting bugs in [#3](https://github.com/renefichtmueller/slop-radar/issues/3) and their fixes ([#2](https://github.com/renefichtmueller/slop-radar/pull/2), [#4](https://github.com/renefichtmueller/slop-radar/pull/4))
 
 Thank you! See [CHANGELOG.md](CHANGELOG.md) for who changed what.
-
-## Related projects
-
-- **[claude-cortex](https://github.com/renefichtmueller/claude-cortex)**: persistent memory for Claude Code sessions.
-- **[claude-sync](https://github.com/renefichtmueller/claude-sync)**: multi-device sync for Claude Code.
 
 ## License
 

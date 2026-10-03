@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Agent skill rewritten for Claude Code and Codex: valid frontmatter, runs the real engine via `npx slop-radar json`, rewrite guidance, before/after scoring. `superpowers-skill/SKILL.md` is now the same file.
+
 ## 1.1.0 (2026-10-03)
 
 Scores change in this release. Text with multi-word buzzwords scores higher than before (no more double counting), dense buzzword text and repeated "Let me …" lines score lower, and German text with umlauts is now actually checked.

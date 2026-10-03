@@ -1,0 +1,42 @@
+name: Release
+
+# Publishes to npm when a GitHub release is published. Uses npm trusted
+# publishing (OIDC), so no npm token is stored anywhere; npm adds provenance.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Trusted publishing needs npm 11.5.1 or newer
+        run: npm --version
+
+      - run: npm install
+
+      - name: Release tag matches package.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version=$(node -p "require('./package.json').version")
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Release tag v$tag does not match package.json version $version"
+            exit 1
+          fi
+
+      - run: npm test
+
+      - name: Publish to npm
+        run: npm publish
