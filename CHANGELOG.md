@@ -32,7 +32,7 @@ Scores change in this release. Text with multi-word buzzwords scores higher than
 - English plural/third-person `-s` on the last word of a phrase matches automatically.
 - Library exports `detectWith`, `loadDatabase`, `normalizeText`, `detectLanguage`; phrase matches include `lengths`.
 - CI: Node 18, 20, 22 and 24; a smoke test that installs the packed tarball; a check that the demo matches the engine.
-- `npm install -g github:renefichtmueller/slop-radar` works (builds on install).
+- Running from GitHub works: `npx github:renefichtmueller/slop-radar`, or clone and `npm install -g .`. A `prepare` script builds on install.
 
 ## 1.0.0 (2026-03-19)
 
