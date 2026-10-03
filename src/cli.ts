@@ -61,11 +61,13 @@ async function main(): Promise<void> {
   // Parse language flag
   let lang: "en" | "de" | "auto" = "auto";
   const langIdx = args.indexOf("--lang");
-  if (langIdx !== -1 && args[langIdx + 1]) {
+  if (langIdx !== -1) {
     const val = args[langIdx + 1];
-    if (val === "en" || val === "de" || val === "auto") {
-      lang = val;
+    if (val !== "en" && val !== "de" && val !== "auto") {
+      console.error(`Invalid --lang value: ${val ?? "(missing)"}. Use en, de or auto.`);
+      process.exit(2);
     }
+    lang = val;
     args.splice(langIdx, 2);
   }
 

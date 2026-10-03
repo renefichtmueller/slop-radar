@@ -1,7 +1,7 @@
 [
   {
     "name": "em-dash-abuse",
-    "pattern": "\\u2014.*\\u2014.*\\u2014",
+    "pattern": "\\u2014[^\\u2014\\n]*\\u2014[^\\u2014\\n]*\\u2014[^\\n]*",
     "weight": 5,
     "description": "Excessive em-dash usage (3+ per paragraph) is a strong AI writing signal"
   },
@@ -21,10 +21,25 @@
   },
   {
     "name": "binary-contrast",
-    "pattern": "not (just|only|merely|simply) .{5,40}, but (also )?",
+    "pattern": "not (just|only|merely|simply) .{2,40}?,? but (also )?",
     "flags": "i",
     "weight": 3,
-    "description": "Binary contrast structures (\"Not just X, but Y\") are over-used by AI"
+    "description": "Binary contrast structures (\"Not just X, but Y\", \"not only X but also Y\") are over-used by AI"
+  },
+  {
+    "name": "negation-pivot",
+    "pattern": "\\b(?:it|this|that)(?:'s not| is not| was not| isn't| wasn't) (?:just |only |merely |simply |about )*[^.!?\\n]{2,60}?(?:[,;:\\u2014\\u2013]|\\.\\s+)\\s*(?:it|this|that)(?:'s| is| was)\\b",
+    "flags": "gi",
+    "weight": 3,
+    "maxCount": 3,
+    "description": "\"It's not X, it's Y\" pivots (\"This isn't a tool. It's a teammate.\") are a signature AI rhetorical move"
+  },
+  {
+    "name": "binary-contrast-de",
+    "pattern": "\\bnicht nur\\b[^.!?\\n]{2,60}?,?\\s+sondern auch\\b",
+    "flags": "giu",
+    "weight": 3,
+    "description": "German binary contrast (\"nicht nur X, sondern auch Y\") is over-used by AI"
   },
   {
     "name": "wh-starters",
@@ -38,14 +53,16 @@
     "pattern": "(^\\s*[-*]\\s.+\\n){6,}",
     "flags": "m",
     "weight": 4,
-    "description": "Long bullet-point lists (6+) without prose are a structural AI pattern"
+    "description": "Long bullet-point lists (6+) without prose are a structural AI pattern",
+    "maxCount": 3
   },
   {
     "name": "triple-adjective",
     "pattern": "\\b\\w+(?:ly)?\\b,\\s+\\b\\w+(?:ly)?\\b,\\s+(?:and\\s+)?\\b\\w+(?:ly)?\\b\\s+\\w+",
     "flags": "i",
     "weight": 2,
-    "description": "Triple adjective chains before nouns are more common in AI writing"
+    "description": "Triple adjective chains before nouns are more common in AI writing",
+    "maxCount": 1
   },
   {
     "name": "meta-reference",
@@ -73,21 +90,24 @@
     "pattern": ":\\s*\\n\\s*[-*1]",
     "flags": "m",
     "weight": 2,
-    "description": "Colon followed by a list is a common AI formatting pattern"
+    "description": "Colon followed by a list is a common AI formatting pattern",
+    "maxCount": 3
   },
   {
     "name": "emoji-header",
-    "pattern": "^\\s*[\\u{1F300}-\\u{1FAD6}]\\s+\\*\\*",
+    "pattern": "^\\s*(?:#{1,6}\\s+\\p{Extended_Pictographic}|\\p{Extended_Pictographic}\\uFE0F?\\s+\\*\\*)",
     "flags": "mu",
     "weight": 5,
-    "description": "Emoji + bold header combinations are a strong AI formatting signal"
+    "description": "Emoji used as header markers (\"🚀 **Speed**\", \"## ✅ Done\") are a strong AI formatting signal",
+    "maxCount": 3
   },
   {
     "name": "number-list-pattern",
     "pattern": "^\\s*\\d+\\.\\s+\\*\\*.+\\*\\*",
     "flags": "m",
     "weight": 2,
-    "description": "Numbered lists with bold items are commonly AI-generated"
+    "description": "Numbered lists with bold items are commonly AI-generated",
+    "maxCount": 3
   },
   {
     "name": "tldr-pattern",

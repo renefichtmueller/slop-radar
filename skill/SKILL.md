@@ -23,7 +23,8 @@ Check for these high-frequency AI phrases (partial list -- see full database in 
 - Actions: "streamline", "optimize", "harness", "unlock", "empower", "catalyze", "reimagine"
 
 ### Buzzword detection (German)
-- "bahnbrechend", "wegweisend", "transformativ", "ganzheitlich", "massgeschneidert"
+- "bahnbrechend", "wegweisend", "transformativ", "ganzheitlich", "maßgeschneidert"
+- "tauchen wir ein", "in der heutigen schnelllebigen Welt", "auf das nächste Level"
 - "darueber hinaus", "nichtsdestotrotz", "in anbetracht", "zusammenfassend"
 - "potenzial entfalten", "impulse setzen", "massstaebe setzen"
 
@@ -42,7 +43,8 @@ Check for these high-frequency AI phrases (partial list -- see full database in 
 ### Scoring
 Start at 100, deduct:
 - -2 per buzzword found
-- -1 to -5 per structural pattern (by weight)
+- -10 / -20 when a text of 30+ words has more than 5 / 10 buzzword hits per 100 words
+- -1 to -5 per structural pattern (by weight; list-style patterns count at most 3 times)
 - -10 for high passive voice density
 - -3 per "Let me" / "Here's" opener
 Bonus +5 for questions, +5 for varied sentence length.

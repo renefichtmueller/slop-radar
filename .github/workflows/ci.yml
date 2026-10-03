@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [18, 20, 22, 24]
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +26,10 @@ jobs:
         run: npm run test:unit
       - name: CLI regression tests
         run: npm run test:regression
+      - name: Demo runs the current engine and database
+        run: |
+          node scripts/build-demo.mjs
+          git diff --exit-code -- demo/lib
 
   smoke-test:
     runs-on: ubuntu-latest
@@ -35,9 +39,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - run: npm install
-      - name: Test CLI
+      - name: Install the packed tarball like a user would
         run: |
-          echo "Let me dive deep into this transformative journey" | npx . check || true
+          npm pack
+          npm install -g ./slop-radar-*.tgz
+      - name: Test the installed CLI
+        run: |
+          slop-radar --version
+          echo "Let me dive deep into this transformative journey" | slop-radar check
+          score=$(echo "Let me dive deep into this transformative journey" | slop-radar score | sed 's/\x1b\[[0-9;]*m//g' | awk '{print $1}')
+          echo "score=$score"
+          test "$score" -lt 100

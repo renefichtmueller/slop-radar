@@ -1,19 +1,25 @@
-import type { DetectionResult } from "./detector.js";
+import type { DetectionResult } from "./engine.js";
 import type { ScoreResult } from "./scorer.js";
 import { VERSION } from "./version.js";
 
-// ANSI color codes
-const RESET = "\x1b[0m";
-const BOLD = "\x1b[1m";
-const DIM = "\x1b[2m";
-const RED = "\x1b[31m";
-const GREEN = "\x1b[32m";
-const YELLOW = "\x1b[33m";
-const CYAN = "\x1b[36m";
-const BG_RED = "\x1b[41m";
-const BG_YELLOW = "\x1b[43m";
-const BG_GREEN = "\x1b[42m";
-const WHITE = "\x1b[37m";
+// Colors follow the NO_COLOR / FORCE_COLOR conventions and stay off when
+// output is piped, so redirected reports contain no escape codes.
+const USE_COLOR =
+  process.env.FORCE_COLOR !== undefined && process.env.FORCE_COLOR !== "0"
+    ? true
+    : process.env.NO_COLOR === undefined && process.stdout.isTTY === true;
+const ansi = (code: string): string => (USE_COLOR ? `\x1b[${code}m` : "");
+
+const RESET = ansi("0");
+const BOLD = ansi("1");
+const DIM = ansi("2");
+const RED = ansi("31");
+const GREEN = ansi("32");
+const YELLOW = ansi("33");
+const BG_RED = ansi("41");
+const BG_YELLOW = ansi("43");
+const BG_GREEN = ansi("42");
+const WHITE = ansi("37");
 
 function scoreColor(s: number): string {
   if (s >= 90) return GREEN;
@@ -103,8 +109,10 @@ export function formatFull(
 
     for (const pm of detection.patternMatches) {
       const countStr = pm.count > 1 ? ` x${pm.count}` : "";
+      const capStr =
+        pm.maxCount !== undefined && pm.count > pm.maxCount ? `, counted max ${pm.maxCount}x` : "";
       lines.push(
-        `    ${YELLOW}▲${RESET} ${pm.name}${DIM}${countStr} (-${pm.weight}pts each)${RESET}`
+        `    ${YELLOW}▲${RESET} ${pm.name}${DIM}${countStr} (-${pm.weight}pts each${capStr})${RESET}`
       );
       lines.push(`      ${DIM}${pm.description}${RESET}`);
     }
@@ -117,6 +125,10 @@ export function formatFull(
   if (scoreResult.breakdown.phraseDeductions > 0)
     lines.push(
       `    ${RED}Buzzwords:               -${scoreResult.breakdown.phraseDeductions}${RESET}`
+    );
+  if (scoreResult.breakdown.densityDeduction > 0)
+    lines.push(
+      `    ${RED}Buzzword density:        -${scoreResult.breakdown.densityDeduction}${RESET}`
     );
   if (scoreResult.breakdown.patternDeductions > 0)
     lines.push(
@@ -175,6 +187,8 @@ export function formatJson(
       patterns: detection.patternMatches.map((m) => ({
         name: m.name,
         count: m.count,
+        weight: m.weight,
+        ...(m.maxCount !== undefined ? { maxCount: m.maxCount } : {}),
       })),
     },
     null,

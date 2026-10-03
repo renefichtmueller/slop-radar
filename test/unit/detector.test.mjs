@@ -21,7 +21,7 @@ test("single-word buzzword is found case-insensitively with its position", () =>
 });
 
 test("buzzwords only match on word boundaries", () => {
-  const d = detect("The leverages and leveraged forms are different words.", "en");
+  const d = detect("Unleverage and leveragement are different words.", "en");
   assert.equal(phrase(d, "leverage"), undefined);
 });
 
