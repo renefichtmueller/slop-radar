@@ -25,3 +25,17 @@
 | Blocker | None. |
 | Next step | Optional: configure npm trusted publishing (GitHub Actions OIDC) so later releases do not need an interactive 2FA prompt. |
 | Continuation context | npm only offers the browser-based 2FA confirmation when `npm publish --auth-type=web` runs in a TTY; the confirmation link expires after about 5 minutes. |
+
+## npm trusted publishing
+
+| Field | Value |
+|---|---|
+| Status | In progress: workflow added; npm-side configuration pending |
+| Priority | Medium |
+| Task | Publish future releases from GitHub Actions via npm trusted publishing (OIDC) instead of an interactive 2FA prompt on a maintainer machine. |
+| Acceptance criterion | `.github/workflows/release.yml` publishes on a published GitHub release; npmjs.com lists GitHub Actions (`renefichtmueller/slop-radar`, `release.yml`) as trusted publisher; token-based publishing disallowed; the next release appears on npm with provenance. |
+| Evidence | 2026-10-04: `release.yml` added (Node 24, `id-token: write`, tag/version check, tests before publish); requirements checked against docs.npmjs.com/trusted-publishers (npm 11.5.1+, Node 22.14+, provenance automatic). |
+| Blocker | Trusted publisher must be configured by the maintainer on npmjs.com (package settings), which needs the maintainer's npm login. |
+| Next step | npmjs.com, package slop-radar, Settings, Trusted Publisher: GitHub Actions, user `renefichtmueller`, repository `slop-radar`, workflow `release.yml`; then set publishing access to "Require two-factor authentication and disallow tokens". Verify with the next release. |
+| Continuation context | Release process is documented in CONTRIBUTING.md ("Releasing"). The workflow does not run for the existing v1.1.0 release. |
+

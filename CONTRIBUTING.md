@@ -52,6 +52,12 @@ Structural patterns go in `src/database/patterns.json`. Each pattern has:
 5. If you changed the engine, the scorer or the database, run `npm run build:demo` and commit `demo/lib/`
 6. Submit a PR
 
+## Releasing (maintainers)
+
+1. Bump `version` in `package.json` and `package-lock.json`, and move the `Unreleased` entries in CHANGELOG.md under the new version.
+2. Merge to `main` with green CI.
+3. Create a GitHub release with the tag `vX.Y.Z` (matching `package.json`). The `Release` workflow tests and publishes to npm through trusted publishing, with provenance.
+
 ## Reporting False Positives
 
 If slop-radar flags legitimate human writing, open an issue with:

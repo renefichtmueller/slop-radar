@@ -189,11 +189,6 @@ Use it to:
 
 Thank you! See [CHANGELOG.md](CHANGELOG.md) for who changed what.
 
-## Related projects
-
-- **[claude-cortex](https://github.com/renefichtmueller/claude-cortex)**: persistent memory for Claude Code sessions.
-- **[claude-sync](https://github.com/renefichtmueller/claude-sync)**: multi-device sync for Claude Code.
-
 ## License
 
 MIT
