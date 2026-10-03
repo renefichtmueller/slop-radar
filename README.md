@@ -4,6 +4,7 @@
 
 **[Try the live demo](https://slop-radar-demo.pages.dev)** in your browser. It runs the same engine and phrase database as the CLI.
 
+[![npm](https://img.shields.io/npm/v/slop-radar.svg)](https://www.npmjs.com/package/slop-radar)
 [![CI](https://github.com/renefichtmueller/slop-radar/actions/workflows/ci.yml/badge.svg)](https://github.com/renefichtmueller/slop-radar/actions/workflows/ci.yml)
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org/)
@@ -44,22 +45,17 @@ Matching is built for everyday text, not just exact copies of the list:
 
 ## Install
 
-The npm package is not published yet ([#1](https://github.com/renefichtmueller/slop-radar/issues/1)). Until then, run it straight from GitHub:
-
 ```bash
-npx github:renefichtmueller/slop-radar check essay.md
+npm install -g slop-radar
 ```
 
-or install the `slop-radar` command from a clone (it stays linked to that folder):
+or run it without installing:
 
 ```bash
-git clone https://github.com/renefichtmueller/slop-radar.git
-cd slop-radar
-npm install
-npm install -g .
+npx slop-radar check essay.md
 ```
 
-`npm install -g github:renefichtmueller/slop-radar` does not work: npm skips the build tools when it installs a Git package globally. Requires Node.js 18 or newer. Once the package is on npm, `npm install -g slop-radar` and `npx slop-radar` will work as well.
+Requires Node.js 18 or newer. To work on the code, clone the repository, run `npm install` (it builds automatically) and `npm test`.
 
 ## CLI
 
