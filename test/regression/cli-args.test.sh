@@ -27,4 +27,7 @@ got=$($CLI --version)
 
 got=$($CLI "$tmp/sloppy.txt" </dev/null | strip | grep -o "v${pkg_version}" | head -1)
 [ "$got" = "v${pkg_version}" ] && echo "PASS check banner uses package version ($got)" || { echo "FAIL check banner version: got '$got' want 'v${pkg_version}'"; fail=1; }
+$CLI --lang fr "$tmp/sloppy.txt" >/dev/null 2>&1; rc=$?
+[ "$rc" -eq 2 ] && echo "PASS invalid --lang exits 2" || { echo "FAIL invalid --lang: exit $rc"; fail=1; }
+
 exit $fail

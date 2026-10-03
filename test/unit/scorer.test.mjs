@@ -97,3 +97,21 @@ test("rating thresholds", () => {
     assert.equal(r.rating, rating, `score ${r.score} should be ${rating}`);
   }
 });
+
+test("maxCount caps the deduction of a pattern, not its reported count", () => {
+  const r = score(detection({ patterns: [{ name: "number-list-pattern", count: 10, weight: 2, maxCount: 3 }] }));
+  assert.equal(r.breakdown.patternDeductions, 6);
+});
+
+const words = (n) => Array.from({ length: n }, (_, i) => `word${i}`).join(" ") + ".";
+
+test("buzzword density deducts 10 above 5 and 20 above 10 hits per 100 words", () => {
+  const text = words(100);
+  assert.equal(score(detection({ text, phrases: 5 })).breakdown.densityDeduction, 0);
+  assert.equal(score(detection({ text, phrases: 6 })).breakdown.densityDeduction, 10);
+  assert.equal(score(detection({ text, phrases: 11 })).breakdown.densityDeduction, 20);
+});
+
+test("buzzword density is ignored for texts under 30 words", () => {
+  assert.equal(score(detection({ text: words(29), phrases: 10 })).breakdown.densityDeduction, 0);
+});

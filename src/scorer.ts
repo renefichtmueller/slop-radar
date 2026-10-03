@@ -1,4 +1,4 @@
-import type { DetectionResult } from "./detector.js";
+import type { DetectionResult, PatternMatch } from "./engine.js";
 
 export interface ScoreResult {
   score: number;
@@ -8,6 +8,7 @@ export interface ScoreResult {
     patternDeductions: number;
     passiveVoiceDeduction: number;
     letMeDeduction: number;
+    densityDeduction: number;
     questionBonus: number;
     sentenceLengthBonus: number;
   };
@@ -49,6 +50,27 @@ function hasVariedSentenceLength(text: string): boolean {
   return stdDev > 4;
 }
 
+// A fixed -2 per hit lets short, dense slop pass as "mostly clean"; density
+// separates it from long human texts with a few incidental hits.
+const DENSITY_MIN_WORDS = 30;
+const DENSITY_STEPS = [
+  { hitsPer100Words: 10, deduction: 20 },
+  { hitsPer100Words: 5, deduction: 10 },
+];
+
+function buzzwordDensityDeduction(text: string, hits: number): number {
+  const words = text.split(/\s+/).filter(Boolean).length;
+  if (words < DENSITY_MIN_WORDS) return 0;
+  const per100 = (hits / words) * 100;
+  return DENSITY_STEPS.find((step) => per100 > step.hitsPer100Words)?.deduction ?? 0;
+}
+
+// List-style patterns hit once per item; maxCount stops one long list from
+// dominating the score.
+export function scoredCount(pm: PatternMatch): number {
+  return pm.maxCount !== undefined ? Math.min(pm.count, pm.maxCount) : pm.count;
+}
+
 function countQuestions(text: string): number {
   const matches = text.match(/\?/g);
   return matches ? matches.length : 0;
@@ -60,6 +82,9 @@ export function score(detection: DetectionResult): ScoreResult {
   // -2 per buzzword hit
   const phraseDeductions = detection.totalPhraseHits * 2;
   s -= phraseDeductions;
+
+  const densityDeduction = buzzwordDensityDeduction(detection.text, detection.totalPhraseHits);
+  s -= densityDeduction;
 
   // -weight per structural pattern match (excluding passive voice and let-me which are handled separately)
   let patternDeductions = 0;
@@ -76,9 +101,9 @@ export function score(detection: DetectionResult): ScoreResult {
         passiveVoiceDeduction = 10;
       }
     } else if (pm.name === "let-me-starter" || pm.name === "heres-the-thing") {
-      letMeDeduction += pm.count * 3;
+      letMeDeduction += scoredCount(pm) * 3;
     } else {
-      patternDeductions += pm.count * pm.weight;
+      patternDeductions += scoredCount(pm) * pm.weight;
     }
   }
 
@@ -104,6 +129,7 @@ export function score(detection: DetectionResult): ScoreResult {
       patternDeductions,
       passiveVoiceDeduction,
       letMeDeduction,
+      densityDeduction,
       questionBonus,
       sentenceLengthBonus,
     },

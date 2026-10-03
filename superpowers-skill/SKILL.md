@@ -19,7 +19,7 @@ Scan text for AI-generated writing patterns before finalizing output.
 
 ## How It Works
 
-1. **Buzzword scan**: Check against 245 English and 127 German AI phrases
+1. **Buzzword scan**: Check against 437 English and 210 German AI phrases
 2. **Structural patterns**: Detect em-dash abuse, "Let me" starters, bullet overload, passive voice density, triple-adjective stacking, hedge phrases
 3. **Score**: 0-100 scale (100 = fully human, 0 = pure AI slop)
 
@@ -116,9 +116,10 @@ Rewrite flagged sections? [y/n]
 For automated checking, slop-radar is available as a CLI tool:
 
 ```bash
-npx slop-radar check <file>    # Full analysis
-npx slop-radar score <file>    # Score only
-npx slop-radar json <file>     # Machine-readable output
+npm install -g github:renefichtmueller/slop-radar   # until the npm package is published
+slop-radar check <file>    # Full analysis
+slop-radar score <file>    # Score only
+slop-radar json <file>     # Machine-readable output
 ```
 
 ## License
