@@ -168,9 +168,16 @@ npm run build:demo
 
 CI fails if `demo/lib/` is out of date, so the demo cannot drift from the CLI again.
 
-## Claude Code skill
+## Claude Code and Codex skill
 
-Copy `skill/SKILL.md` (or `superpowers-skill/SKILL.md`) into `.claude/skills/slop-radar/` to use slop-radar from Claude Code.
+`skill/SKILL.md` is an agent skill for Claude Code and OpenAI Codex. It runs the real engine (`npx slop-radar json`), reports the hits and rewrites flagged passages. Install it once per tool:
+
+```bash
+mkdir -p ~/.claude/skills/slop-radar && cp skill/SKILL.md ~/.claude/skills/slop-radar/   # Claude Code
+mkdir -p ~/.codex/skills/slop-radar && cp skill/SKILL.md ~/.codex/skills/slop-radar/     # Codex
+```
+
+For a single project, use `.claude/skills/slop-radar/` inside the repository instead. `superpowers-skill/SKILL.md` is the same file, kept for existing installs.
 
 ## Why this exists
 

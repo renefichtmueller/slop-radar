@@ -1,65 +1,39 @@
+---
+name: slop-radar
+description: Score prose for AI slop (buzzwords, filler phrases, chatbot tells, formulaic structure) in English and German with the slop-radar engine, then suggest concrete rewrites. Use when the user asks to check text for AI slop or buzzwords, to make writing sound less AI-generated, or before finalizing a README, documentation, post or email they asked you to polish.
+---
+
 # slop-radar
 
-AI slop detection skill for Claude Code. Scans text for AI buzzwords, structural patterns, and scoring.
+Measure AI-style writing with the real slop-radar engine instead of judging by eye. The score runs from 0 to 100; higher means more human.
 
-## Usage
+## 1. Run the engine
 
-When reviewing or writing text, check it for AI slop patterns. Run slop-radar on any text file, clipboard content, or inline text to get a quality score.
+```bash
+npx -y slop-radar json path/to/file.md            # a file
+printf '%s' "$TEXT" | npx -y slop-radar json      # inline text
+```
 
-## Instructions
+Use `slop-radar json …` instead of `npx -y slop-radar json …` when it is installed globally (`npm install -g slop-radar`). Add `--lang de` or `--lang en` when auto-detection picks the wrong language.
 
-When the user asks to check text for AI slop, buzzwords, or writing quality:
+The JSON contains `score`, `rating`, `language`, `phrases` (`phrase`, `count`), `patterns` (`name`, `count`, `weight`, optional `maxCount`) and `breakdown` (every deduction and bonus).
 
-1. Read the target text (file, selection, or inline)
-2. Scan for these categories:
+## 2. Report
 
-### Buzzword detection (English)
-Check for these high-frequency AI phrases (partial list -- see full database in slop-radar repo):
-- Filler: "dive into", "delve", "landscape", "journey", "tapestry", "realm", "endeavor"
-- Hype: "game-changer", "cutting-edge", "revolutionary", "transformative", "unprecedented", "groundbreaking"
-- Corporate: "leverage", "synergy", "stakeholder", "bandwidth", "paradigm shift", "value-add"
-- Connectors: "moreover", "furthermore", "additionally", "it's worth noting", "needless to say"
-- Openers: "in today's world", "as we navigate", "let me break this down", "here's the thing"
-- Actions: "streamline", "optimize", "harness", "unlock", "empower", "catalyze", "reimagine"
+- The score and rating (90-100 HUMAN, 70-89 MOSTLY CLEAN, 50-69 SUSPICIOUS, 30-49 LIKELY AI, 0-29 PURE SLOP).
+- Each flagged phrase and pattern with a concrete replacement. Quote the passage; do not list categories in the abstract.
+- The largest items from `breakdown`, so the user sees what costs the most points.
 
-### Buzzword detection (German)
-- "bahnbrechend", "wegweisend", "transformativ", "ganzheitlich", "maßgeschneidert"
-- "tauchen wir ein", "in der heutigen schnelllebigen Welt", "auf das nächste Level"
-- "darueber hinaus", "nichtsdestotrotz", "in anbetracht", "zusammenfassend"
-- "potenzial entfalten", "impulse setzen", "massstaebe setzen"
+## 3. Rewrite (when asked, or offer it below 70)
 
-### Structural patterns
-- Excessive em-dash usage (3+ per paragraph)
-- "Let me [verb]" sentence starters
-- "Here's the thing/what" openers
-- Binary contrasts ("Not just X, but Y")
-- Wh- question headers ("What makes this", "Why this matters")
-- Bullet-point overload (6+ consecutive bullets)
-- Triple adjective chains
-- Meta-references ("In this article/post/guide")
-- High passive voice density (>30% of sentences)
-- Emoji + bold header combinations
+- Replace buzzwords with plain words: "leverage" → "use", "utilize" → "use", "robust" → say what makes it reliable, "seamless" → describe the actual experience.
+- Name specifics instead of hype: "cutting-edge" → the technology, "stakeholders" → the people, "transformative" → the change.
+- Delete filler: "moreover", "it's worth noting that", "in today's fast-paced world", "I hope this helps".
+- Break formulas: "It's not X, it's Y" → state Y; "not only X but also Y" → two plain sentences; emoji headers and bold numbered lists → prose where prose works.
+- German: "maßgeschneiderte Lösungen", "einen Mehrwert schaffen", "tauchen wir ein", "auf das nächste Level" → say concretely what the thing does.
 
-### Scoring
-Start at 100, deduct:
-- -2 per buzzword found
-- -10 / -20 when a text of 30+ words has more than 5 / 10 buzzword hits per 100 words
-- -1 to -5 per structural pattern (by weight; list-style patterns count at most 3 times)
-- -10 for high passive voice density
-- -3 per "Let me" / "Here's" opener
-Bonus +5 for questions, +5 for varied sentence length.
+Run the engine again on the rewrite and report the score before and after. Keep the author's meaning and facts; never invent numbers or examples.
 
-Rating: 90-100 HUMAN, 70-89 MOSTLY CLEAN, 50-69 SUSPICIOUS, 30-49 LIKELY AI, 0-29 PURE SLOP
+## Without Node.js
 
-### Output format
-Report the score, list found buzzwords, list detected patterns, and suggest concrete replacements:
-- Replace "leverage" with "use"
-- Replace "utilize" with "use"
-- Replace "comprehensive" with "complete" or "full"
-- Replace "robust" with "solid" or "strong"
-- Replace "seamless" with "smooth"
-- Replace "innovative" with describe what is actually new
-- Replace "transformative" with describe the actual change
-- Drop filler connectors entirely ("moreover", "furthermore", "additionally")
-- Replace "it's worth noting" with just state the thing
-- Replace "in today's fast-paced world" with be specific about what changed
+If `npx` is unavailable, check the text by hand for the categories above and say clearly that the result is an estimate, not a slop-radar score.
