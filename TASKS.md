@@ -17,11 +17,11 @@
 
 | Field | Value |
 |---|---|
-| Status | Open |
+| Status | Complete |
 | Priority | Medium |
 | Task | Publish slop-radar to npm so `npm install -g slop-radar` and `npx slop-radar` work. |
 | Acceptance criterion | `npm view slop-radar version` returns 1.1.0; `npx slop-radar --version` works on a clean machine; issue #1 closed with a note. |
-| Evidence | 2026-10-03: the name `slop-radar` is free on npm; `npm pack` produces a 34-file tarball (dist, database, README, LICENSE) that installs and runs; CI smoke-tests the packed tarball. 2026-10-04: README switched to npm install (#7); maintainer logged in via npm web login; `npm publish --dry-run` OK (25.1 kB, 34 files); `npm publish` returned 403: the account has no two-factor authentication, which npm requires for publishing. |
-| Blocker | The maintainer must enable two-factor authentication on the npm account (account setting). |
-| Next step | Enable npm 2FA, then run `npm publish --auth-type=web` from a clean checkout of main and confirm the 2FA prompt; then close #1. |
-| Continuation context | The README already documents `npm install -g slop-radar` (#7), so it is wrong until the publish succeeds; working fallbacks are `npx github:renefichtmueller/slop-radar` and clone + `npm install -g .` (verified 2026-10-03). `npm install -g github:...` fails under npm 10 (global git installs run `prepare` without devDependencies). |
+| Evidence | 2026-10-04: maintainer enabled npm 2FA; `slop-radar@1.1.0` published from main `eda1c19` (25.1 kB, 34 files, shasum a525b133); `npm view` reports version and `latest` 1.1.0; global install into an empty prefix and `npx slop-radar@1.1.0` both run and score text; GitHub release v1.1.0 created; issue #1 closed with install instructions. |
+| Blocker | None. |
+| Next step | Optional: configure npm trusted publishing (GitHub Actions OIDC) so later releases do not need an interactive 2FA prompt. |
+| Continuation context | npm only offers the browser-based 2FA confirmation when `npm publish --auth-type=web` runs in a TTY; the confirmation link expires after about 5 minutes. |
