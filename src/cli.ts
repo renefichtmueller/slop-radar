@@ -68,8 +68,22 @@ async function main(): Promise<void> {
     args.splice(langIdx, 2);
   }
 
-  const command = args[0] ?? "";
-  const filePath = args[1];
+  const COMMANDS = ["check", "score", "json"];
+  let command = args[0] ?? "";
+  let filePath = args[1];
+
+  // A bare file argument (`slop-radar file.md`) means `check file.md`.
+  // Without this, the file name was taken as the command and stdin was
+  // analysed instead, silently ignoring the file.
+  if (command && !COMMANDS.includes(command)) {
+    if (filePath) {
+      console.error(`Unknown command: ${command}`);
+      printUsage();
+      process.exit(2);
+    }
+    filePath = command;
+    command = "check";
+  }
 
   let text = "";
 
