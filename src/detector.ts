@@ -97,15 +97,11 @@ function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function fuzzyMatch(text: string, phrase: string): number {
-  // Simple fuzzy: check for the phrase with optional extra whitespace / punctuation between words
-  const words = phrase.split(/\s+/);
-  if (words.length === 1) return 0; // No fuzzy for single words
-
-  const fuzzyPattern = words.map(escapeRegex).join("[\\s,;:\\-]+");
-  const re = new RegExp(fuzzyPattern, "gi");
-  const matches = text.match(re);
-  return matches ? matches.length : 0;
+function phraseRegex(phrase: string): RegExp {
+  // Words may be separated by extra whitespace or punctuation ("dive, deep").
+  // One regex covers exact and loose forms, so each occurrence counts once.
+  const body = phrase.split(/\s+/).map(escapeRegex).join("[\\s,;:\\-]+");
+  return new RegExp(`\\b${body}\\b`, "gi");
 }
 
 export function detect(
@@ -120,8 +116,7 @@ export function detect(
   const phraseMatches: PhraseMatch[] = [];
 
   for (const phrase of phrases) {
-    const escaped = escapeRegex(phrase);
-    const re = new RegExp(`\\b${escaped}\\b`, "gi");
+    const re = phraseRegex(phrase);
     const positions: number[] = [];
     let match: RegExpExecArray | null;
 
@@ -129,10 +124,7 @@ export function detect(
       positions.push(match.index);
     }
 
-    // Also check fuzzy matches
-    const fuzzyCount = fuzzyMatch(textLower, phrase);
-
-    const totalCount = positions.length + fuzzyCount;
+    const totalCount = positions.length;
     if (totalCount > 0) {
       phraseMatches.push({
         phrase,
@@ -148,10 +140,11 @@ export function detect(
 
   for (const pDef of patternDefs) {
     try {
+      // Always match globally: without /g, String.match returns capture
+      // groups for the first hit instead of every occurrence.
       const flags = pDef.flags ?? "gi";
-      const re = new RegExp(pDef.pattern, flags);
-      const matches = text.match(re);
-      const count = matches ? matches.length : 0;
+      const re = new RegExp(pDef.pattern, flags.includes("g") ? flags : flags + "g");
+      const count = [...text.matchAll(re)].length;
 
       if (count > 0) {
         patternMatches.push({

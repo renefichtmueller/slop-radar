@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { detect } from "./detector.js";
 import { score } from "./scorer.js";
 import { formatFull, formatScore, formatJson } from "./formatter.js";
+import { VERSION } from "./version.js";
 
 function readStdin(): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -53,7 +54,7 @@ async function main(): Promise<void> {
   }
 
   if (args.includes("--version") || args.includes("-v")) {
-    console.log("slop-radar 1.0.0");
+    console.log(`slop-radar ${VERSION}`);
     process.exit(0);
   }
 

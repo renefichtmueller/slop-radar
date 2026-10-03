@@ -1,5 +1,6 @@
 import type { DetectionResult } from "./detector.js";
 import type { ScoreResult } from "./scorer.js";
+import { VERSION } from "./version.js";
 
 // ANSI color codes
 const RESET = "\x1b[0m";
@@ -46,7 +47,7 @@ export function formatFull(
   // Header
   lines.push("");
   lines.push(
-    `${BOLD}  SLOP RADAR${RESET} ${DIM}v1.0.0${RESET}`
+    `${BOLD}  SLOP RADAR${RESET} ${DIM}v${VERSION}${RESET}`
   );
   lines.push(`  ${"─".repeat(50)}`);
   lines.push("");

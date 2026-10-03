@@ -82,19 +82,44 @@ test("pattern matches carry the weight from the database", () => {
   assert.equal(m.weight, 3);
 });
 
-// Known bugs, documented as todo so CI stays green until they are fixed.
+// Counting regressions (see issue #3).
 
-test("multi-word phrase occurring once is counted once", { todo: "fuzzyMatch re-counts exact multi-word hits (count is 2)" }, () => {
+test("multi-word phrase occurring once is counted once", () => {
   const d = detect("We should dive deep into this.", "en");
   assert.equal(phrase(d, "dive deep").count, 1);
 });
 
-test("non-global pattern counts every occurrence", { todo: "String.match without /g returns capture groups, not occurrences" }, () => {
+test("non-global pattern counts every occurrence", () => {
   const d = detect("Let me explain.\nLet me show you.\nLet me be clear.", "en");
   assert.equal(pattern(d, "let-me-starter").count, 3);
 });
 
-test("pattern count does not depend on capture groups", { todo: "String.match without /g returns capture groups, not occurrences" }, () => {
+test("pattern count does not depend on capture groups", () => {
   const d = detect("Here's the thing about caching.", "en");
   assert.equal(pattern(d, "heres-the-thing").count, 1);
+});
+
+test("multi-word phrase with loose separators is counted once", () => {
+  const d = detect("We should dive,  deep into this.", "en");
+  assert.equal(phrase(d, "dive deep").count, 1);
+});
+
+test("multi-word phrase respects word boundaries", () => {
+  const d = detect("We should dive deeper into this.", "en");
+  assert.equal(phrase(d, "dive deep"), undefined);
+});
+
+test("phrase count always equals the number of positions", () => {
+  const d = detect(
+    "Let me dive deep. In today's fast-paced world we dive deep and leverage, leverage.",
+    "en"
+  );
+  for (const m of d.phraseMatches) {
+    assert.equal(m.count, m.positions.length, m.phrase);
+  }
+});
+
+test("patterns with a flags override still count every occurrence", () => {
+  const d = detect("In this article, we cover X. In this guide, we cover Y.", "en");
+  assert.equal(pattern(d, "meta-reference").count, 2);
 });

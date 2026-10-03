@@ -112,16 +112,16 @@ Score is clamped to 0-100.
 
 **Output:**
 ```
-  Score: 28/100  PURE SLOP
+  Score: 62/100  SUSPICIOUS
 
-  Buzzwords found: 12
-    "dive deep", "transformative", "journey", "in today's fast-paced",
-    "landscape", "it's worth noting", "leveraging", "cutting-edge",
-    "crucial", "moreover", "holistic", "empower", "stakeholders",
+  Buzzwords found: 16
+    "dive deep", "transformative", "journey", "here's the thing",
+    "in today's fast-paced", "fast-paced", "landscape", "it's worth noting",
+    "cutting-edge", "crucial", "moreover", "holistic", "holistic approach",
     "unlock", "unprecedented", "synergy"
 
-  Patterns detected: 3
-    let-me-starter, heres-the-thing, worth-noting
+  Patterns detected: 2
+    let-me-starter, heres-the-thing
 ```
 
 **Cleaned version:**

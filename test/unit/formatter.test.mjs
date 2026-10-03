@@ -1,6 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { detect, score, formatJson, formatScore, formatFull } from "../../dist/index.js";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { detect, score, formatJson, formatScore, formatFull, VERSION } from "../../dist/index.js";
+
+const pkg = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "..", "package.json"), "utf-8")
+);
 
 const strip = (s) => s.replace(/\x1b\[[0-9;]*m/g, "");
 const text = "Let me explain how we leverage synergy.";
@@ -26,4 +33,9 @@ test("formatFull includes the score and rating", () => {
   const out = strip(formatFull(d, s));
   assert.match(out, new RegExp(`Score: ${s.score}`));
   assert.ok(out.includes(s.rating));
+});
+
+test("VERSION matches package.json and appears in the full report banner", () => {
+  assert.equal(VERSION, pkg.version);
+  assert.match(strip(formatFull(d, s)), new RegExp(`v${pkg.version.replaceAll(".", "\\.")}\\b`));
 });
