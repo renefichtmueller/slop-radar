@@ -116,7 +116,7 @@ Rewrite flagged sections? [y/n]
 For automated checking, slop-radar is available as a CLI tool:
 
 ```bash
-npm install -g github:renefichtmueller/slop-radar   # until the npm package is published
+# until the npm package is published: npx github:renefichtmueller/slop-radar <command> <file>
 slop-radar check <file>    # Full analysis
 slop-radar score <file>    # Score only
 slop-radar json <file>     # Machine-readable output

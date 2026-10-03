@@ -24,4 +24,4 @@
 | Evidence | 2026-10-03: the name `slop-radar` is free on npm; `npm pack` produces a 34-file tarball (dist, database, README, LICENSE) that installs and runs; CI smoke-tests the packed tarball. |
 | Blocker | Requires the maintainer's npm account (`npm login`). |
 | Next step | `npm login`, then `npm publish` from a clean checkout of main. |
-| Continuation context | Until then the README documents `npm install -g github:renefichtmueller/slop-radar`, which builds through the `prepare` script. |
+| Continuation context | Until then the README documents `npx github:renefichtmueller/slop-radar` and clone + `npm install -g .` (both verified 2026-10-03). `npm install -g github:...` fails under npm 10: the global git install runs `prepare` without devDependencies (`tsc: command not found`). |

@@ -44,13 +44,22 @@ Matching is built for everyday text, not just exact copies of the list:
 
 ## Install
 
-The npm package is not published yet ([#1](https://github.com/renefichtmueller/slop-radar/issues/1)). Until then, install straight from GitHub:
+The npm package is not published yet ([#1](https://github.com/renefichtmueller/slop-radar/issues/1)). Until then, run it straight from GitHub:
 
 ```bash
-npm install -g github:renefichtmueller/slop-radar
+npx github:renefichtmueller/slop-radar check essay.md
 ```
 
-Requires Node.js 18 or newer. Once the package is on npm, `npm install -g slop-radar` and `npx slop-radar` will work as well.
+or install the `slop-radar` command from a clone (it stays linked to that folder):
+
+```bash
+git clone https://github.com/renefichtmueller/slop-radar.git
+cd slop-radar
+npm install
+npm install -g .
+```
+
+`npm install -g github:renefichtmueller/slop-radar` does not work: npm skips the build tools when it installs a Git package globally. Requires Node.js 18 or newer. Once the package is on npm, `npm install -g slop-radar` and `npx slop-radar` will work as well.
 
 ## CLI
 
